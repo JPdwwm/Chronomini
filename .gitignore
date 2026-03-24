@@ -15,6 +15,9 @@
 *.sln
 *.sw?
 
+# Docs locaux
+DOCKER_AND_SECRETS_GUIDE.md
+
 # Systeme
 .DS_Store
 Thumbs.db
