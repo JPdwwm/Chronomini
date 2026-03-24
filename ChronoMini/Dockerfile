@@ -17,9 +17,13 @@ RUN apt-get update && apt-get install -y \
 COPY . /var/www/app 
 # Ce dossier devient notre repertoire courant
 WORKDIR /var/www/app 
-# Copie de l'environnement
-COPY .env.${MODE} .env
-COPY vhost.conf /etc/apache2/sites-available/000-default.conf 
+# Copie de l'environnement : en test on copie le .env, en prod il sera monté au runtime
+RUN if [ "$MODE" = "prod" ]; then \
+      echo "Production: .env will be mounted at runtime" ; \
+    else \
+      cp .env.${MODE} .env ; \
+    fi
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
  
 RUN a2enmod rewrite 
  
