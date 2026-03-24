@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /user
+Disallow: /admin
+Allow: /

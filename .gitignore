@@ -1,0 +1,20 @@
+# Fichiers d'environnement (secrets, credentials)
+# Double protection : chaque sous-projet a son propre .gitignore,
+# mais on bloque aussi au niveau racine par securite.
+.env
+.env.*
+!.env.example
+
+# Outils et IDE
+.claude/
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Systeme
+.DS_Store
+Thumbs.db

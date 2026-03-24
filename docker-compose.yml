@@ -1,0 +1,23 @@
+services:
+  laraver-docker:
+    container_name: laravel-docker
+    build: ./ChronoMini
+    ports:
+      - 8000:80
+  vue-docker:
+    container_name: vue-docker
+    build: ./ChronoMini-front
+    ports:
+      - 80:80
+  mysql_db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: chronomini
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

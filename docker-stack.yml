@@ -1,0 +1,63 @@
+services:
+  laravel-docker:
+    image: ghcr.io/jpdwwm/chronomini-prod:latest
+    restart: on-failure
+    ports:
+      - 8000:80
+    depends_on:
+      - mysql_db
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laravel-docker.rule=Host(`api.chronomini.fr`)"
+      - "traefik.http.routers.laravel-docker.entrypoints=websecure"
+      - "traefik.http.routers.laravel-docker.tls.certresolver=myresolver"
+
+  vue-docker:
+    image: ghcr.io/jpdwwm/chronomini-front-prod:latest
+    restart: on-failure
+    ports:
+      - 8001:80
+    depends_on:
+      - laravel-docker
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vue-docker.rule=Host(`chronomini.fr`)"
+      - "traefik.http.routers.vue-docker.entrypoints=websecure"
+      - "traefik.http.routers.vue-docker.tls.certresolver=myresolver"
+
+  mysql_db:
+    image: mysql:latest
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: chronomini
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  traefik:
+    image: traefik:v3.2
+    restart: on-failure
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"  
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure" 
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=noreply@chronomini.fr"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=DEBUG"
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "8080:8080"
+    volumes:
+      - "/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+volumes:
+  mysql_data:
